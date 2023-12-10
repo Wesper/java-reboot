@@ -1,14 +1,20 @@
 package ru.sberbank.edu;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Weather cache.
  */
+@Component
 public class WeatherCache {
 
     private final Map<String, WeatherInfo> cache = new HashMap<>();
+    @Autowired
     private WeatherProvider weatherProvider;
 
     /**
@@ -26,15 +32,31 @@ public class WeatherCache {
      * @param city - city
      * @return actual weather info
      */
-    public WeatherInfo getWeatherInfo(String city) {
-        // should be implemented
-        return null;
+    public synchronized WeatherInfo getWeatherInfo(String city) {
+        if (!cache.containsKey(city)) {
+            WeatherInfo weatherInfo =  weatherProvider.get(city);
+            if (weatherInfo != null) {
+                cache.put(city, weatherInfo);
+            }
+            return weatherInfo;
+        } else if (LocalDateTime.now().isEqual(cache.get(city).getExpiryTime()) || LocalDateTime.now().isBefore(cache.get(city).getExpiryTime())) {
+            return cache.get(city);
+        } else {
+            WeatherInfo weatherInfo =  weatherProvider.get(city);
+            if (weatherInfo == null) {
+                removeWeatherInfo(city);
+                return null;
+            } else {
+                cache.put(city, weatherInfo);
+                return weatherInfo;
+            }
+        }
     }
 
     /**
      * Remove weather info from cache.
      **/
     public void removeWeatherInfo(String city) {
-        // should be implemented
+        cache.remove(city);
     }
 }
