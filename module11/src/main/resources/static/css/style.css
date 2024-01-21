@@ -1,0 +1,18 @@
+.w-15 {
+    width: 15% !important;
+}
+
+.container {
+    padding: 2rem 0rem;
+}
+
+h1 {
+    margin: 2rem 0rem 1rem;
+}
+
+.table-image {
+    td, th {
+        vertical-align: middle;
+    }
+}
+
