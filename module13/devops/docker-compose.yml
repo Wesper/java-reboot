@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: users
+    ports:
+      - 8089:5432
+  service:
+    image: dbusers
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/users
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
